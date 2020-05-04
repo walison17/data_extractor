@@ -38,6 +38,12 @@ class ExcelExtractor(AbstractSimpleExtractor):
         except ValueError as exc:
             raise ExprError(extractor=self, exc=exc) from exc
         else:
+            if isinstance(cell, tuple):  # Cell range
+                return [
+                    c.value for row in cell for c in row
+                    if c.value is not None  # Escape empty cells
+                ]
+
             value = cell.value
 
             if not value:

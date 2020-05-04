@@ -16,6 +16,9 @@ def workbook():
     sheet["A2"] = "walison17"
     sheet["B2"] = "brazil"
 
+    sheet["A3"] = "linw1995"
+    sheet["B3"] = "china"
+
     return wb
 
 
@@ -42,10 +45,10 @@ def test_extract(element, expr, expect):
     "expr,expect",
     [
         ("A1", "username"),
-        ("A3", "default"),
+        ("A9", "default"),
         ("A2", "walison17"),
         ("B2", "brazil"),
-        ("B3", "default"),
+        ("B9", "default"),
     ],
     ids=repr,
 )
@@ -54,7 +57,7 @@ def test_extract_first(element, expr, expect):
     assert expect == extractor.extract_first(element, default="default")
 
 
-@pytest.mark.parametrize("expr", ["A3", "B3"], ids=repr)
+@pytest.mark.parametrize("expr", ["A9", "B9"], ids=repr)
 def test_extract_first_without_default(element, expr):
     extractor = ExcelExtractor(expr)
 
@@ -76,3 +79,17 @@ def test_invalid_cell_coordinate(element, expr):
 
     exc = catch.value
     assert exc.extractor is extractor
+
+
+@pytest.mark.parametrize(
+    "expr,expect",
+    [
+        ("A2:B2", ["walison17", "brazil"]),
+        ("A3:B3", ["linw1995", "china"]),
+        ("A2:D3", ["walison17", "brazil", "linw1995", "china"]),
+    ],
+    ids=repr,
+)
+def test_extract_cell_range(element, expr, expect):
+    extractor = ExcelExtractor(expr)
+    assert extractor.extract(element) == expect
